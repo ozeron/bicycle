@@ -1,5 +1,5 @@
 <?php
-  class Calculator {
+  class Calculator extend Model {
     private $actions = [
       "+" => "plus",
       "*" => "multiply",

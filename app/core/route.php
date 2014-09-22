@@ -1,59 +1,45 @@
 <?php
 class Route
 {
-  static function start()
+  // контроллер и действие по умолчанию
+  private $controller_name = 'Main';
+  private $action_name = 'index';
+
+  private $routes = [];
+
+  
+  function start()
   {
-    // контроллер и действие по умолчанию
-    $controller_name = 'Main';
-    $action_name = 'index';
-    
     $routes = explode('/', $_SERVER['REQUEST_URI']);
 
-    // получаем имя контроллера
-    if ( !empty($routes[1]) )
-    { 
-        $controller_name = $routes[1];
-    }
-    
+    // получаеи имя контроллера
+    $this->update_controller_name($routes);
     // получаем имя экшена
-    if ( !empty($routes[2]) )
-    {
-        $action_name = $routes[2];
-    }
+    $this->update_action_name($routes);
 
     // добавляем префиксы
-    $model_name = 'Model_'.$controller_name;
-    $controller_name = 'Controller_'.$controller_name;
-    $action_name = 'action_'.$action_name;
+    $model_name = $this->controller_name."_Model";
+    $this->controller_name .= "_Controller";
 
     // подцепляем файл с классом модели (файла модели может и не быть)
-
-    $model_file = strtolower($model_name).'.php';
-    $model_path = "application/models/".$model_file;
-    if(file_exists($model_path))
-    {
-        include "application/models/".$model_file;
+    try {
+      $model_path = $this->locate_model($model_name);
+      $this->include_module($model_path);
+    } catch (Exception $e){
+      //it's ok, if model not found;
     }
-
     // подцепляем файл с классом контроллера
-    $controller_file = strtolower($controller_name).'.php';
-    $controller_path = "application/controllers/".$controller_file;
-    if(file_exists($controller_path))
-    {
-        include "application/controllers/".$controller_file;
-    }
-    else
-    {
-        /*
-        правильно было бы кинуть здесь исключение,
-        но для упрощения сразу сделаем редирект на страницу 404
-        */
-        Route::ErrorPage404();
+    try {
+      $controller_path = $this->locate_controller($this->controller_name);
+      var_dump($controller_path);
+      $this->include_module($controller_path);
+    } catch (Exception $e){
+      Route::ErrorPage404();
     }
     
     // создаем контроллер
-    $controller = new $controller_name;
-    $action = $action_name;
+    $controller = new $this->controller_name;
+    $action = $this->action_name;
     
     if(method_exists($controller, $action))
     {
@@ -65,7 +51,6 @@ class Route
         // здесь также разумнее было бы кинуть исключение
         Route::ErrorPage404();
     }
-  
   }
   
   function ErrorPage404()
@@ -75,4 +60,46 @@ class Route
     header("Status: 404 Not Found");
     header('Location:'.$host.'404');
   }
+ 
+  protected function locate_file($type,$name){
+    return "app/".$type."/".strtolower($name).".php";
+  }
+  protected function locate_view($name){
+    return $this->locate_file("views",$name);
+  }
+  protected function locate_controller($name){
+    return $this->locate_file("controllers",$name);
+  }
+  protected function locate_model($name){
+    return $this->locate_file("models",$name);
+  }
+  protected function include_module($path){
+    if(file_exists($path)){
+      include $path;
+    }
+    else {
+       throw new Exception('File not found.');
+    }
+  }
+  protected function update_controller_name($routes){
+    if ( !empty($routes[1]) )
+    { 
+      $this->controller_name = $routes[1];
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  protected function update_action_name($routes){
+    if ( !empty($routes[2]) )
+    {
+      $this->action_name = $routes[2];
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 }
+?>

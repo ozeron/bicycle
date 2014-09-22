@@ -6,6 +6,12 @@
       "-" => "minus",
       "/" => "divide"
     ];
+    private function is_numeric($a,$b){
+      return is_numeric($a) && is_numeric($b);
+    }
+    private function not_numeric($a,$b){
+      return !$this->is_numeric($a,$b);
+    }
     function plus($a, $b){
       return $a + $b;
     }
@@ -19,6 +25,9 @@
       return $a / $b;
     }
     function calculate($action, $a, $b){
+      if ($this->not_numeric($a,$b)){
+        return 'Error:$a or $b not numeric!';
+      }
       $function = $this->actions[$action];
       if (is_callable($function)){
         return $this->$function($a, $b);
@@ -27,6 +36,7 @@
         return "Action undefied!";
       }
     }    
-
   }
+  $c = new Calculator;
+  echo $c->calculate("a","b","c");
 ?>

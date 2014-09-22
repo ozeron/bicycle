@@ -31,7 +31,6 @@ class Route
     // подцепляем файл с классом контроллера
     try {
       $controller_path = $this->locate_controller($this->controller_name);
-      var_dump($controller_path);
       $this->include_module($controller_path);
     } catch (Exception $e){
       Route::ErrorPage404();

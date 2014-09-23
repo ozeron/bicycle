@@ -1,13 +1,13 @@
 <h1>Калькулятор</h1>
-<form id="calculator">
-  <input type="text" name="a_num">
+<form id="calculator" method="post" action="main/calculate">
+  <input type="text" name="a">
   <select name="action" form="calculator">
     <option value="+">+</option>
     <option value="-">-</option>
     <option value="*">*</option>
     <option value="/">/</option>
   </select>
-  <input type="text" name="b_num">
+  <input type="text" name="b">
   <br>
   <input type="submit">
 </form>

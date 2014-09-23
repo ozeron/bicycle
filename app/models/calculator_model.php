@@ -1,5 +1,5 @@
 <?php
-  class Calculator extend Model {
+  class Calculator_Model extends Model {
     private $actions = [
       "+" => "plus",
       "*" => "multiply",
@@ -29,7 +29,7 @@
         return 'Error:$a or $b not numeric!';
       }
       $function = $this->actions[$action];
-      if (is_callable($function)){
+      if (is_callable($function,true)){
         return $this->$function($a, $b);
       }
       else {
@@ -37,6 +37,4 @@
       }
     }    
   }
-  $c = new Calculator;
-  echo $c->calculate("a","b","c");
 ?>

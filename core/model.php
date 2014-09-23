@@ -1,8 +1,8 @@
-<php?
-  class Model
-  {
-      public function get_data()
-      {
-      }
-  }
+<?php
+class Model
+{
+    public function get_data()
+    {
+    }
+}
 ?>
